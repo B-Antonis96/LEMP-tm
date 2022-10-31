@@ -1,57 +1,82 @@
 #!/usr/bin/env python
+from curses.ascii import US
+from this import d
 import mysql.connector
 from mysql.connector import Error, MySQLConnection, CMySQLConnection
+from pydantic import BaseModel
 from models.message import Message
+from models.user import User
+import conf_service as conf
 
-# Connection settings
-connection_string = {
-    "host": "localhost",
-    "user": "lemp",
-    "password": "lemp",
-    "db": "lemp"
-}
+#########################
+### SERVICE: Database ###
+#########################
+
+# Declarations
+user_table: str = "users"
+message_table: str = "messages"
 
 # Try connect to database
 def __open_connection() -> CMySQLConnection | MySQLConnection:
     try:
-        return mysql.connector.connect(**connection_string)
-    except Exception as e:
-        raise e
+        return mysql.connector.connect(
+            host = conf.DB_HOST,
+            port = conf.DB_PORT,
+            user = conf.DB_USER,
+            password = conf.DB_PASSWORD,
+            database = conf.DB_DATABASE
+        )
+    except Exception as ex:
+        raise ex
 
 # Get all entries from table
 def get_all_entries(table: str):
     try:
-        db_con = __open_connection()
-        cursor = db_con.cursor(buffered=True)
-        cursor.execute(f"SELECT * FROM {table}")
-        data = cursor.fetchall()
-        db_con.close()
-        if data:
-            return data
-        else:
-            return f"No {table} yet..."
-    except Exception as e:
-        return str(e)
+        with __open_connection() as db_con:
+            with db_con.cursor(buffered=True) as cursor:
+                cursor.execute(f"SELECT * FROM {table}")
+                data = cursor.fetchall()
+                db_con.close()
+                if data:
+                    return data
+                else:
+                    return None
+    except Exception as ex:
+        raise ex
+
+# # Get all User entries
+# def get_users() -> list(User) | None:
+#     data = get_all_entries(user_table)
+#     for usr in data:
+
+
+# Get User entry with UID
+def get_user(uid: str) -> User | None:
+    try:
+        with __open_connection() as db_con:
+            with db_con.cursor(buffered=True) as cursor:
+                cursor.execute(f"SELECT * FROM {user_table} WHERE 'uid' = {uid}")
+                data = cursor.fetchone()
+                db_con.close()
+                return User(uid=data['uid'], name=data['name']) if data else None
+    except Exception as ex:
+        raise ex
 
 # Get all Message entries
 def get_messages():
-    return get_all_entries("messages")
-
-# Get message entry
-def get_message():
-    pass
+    return get_all_entries(user_table)
 
 # Insert entry into "Messages"
 def insert_message(message: Message) -> str:
     try:
-        db_con = __open_connection()
-        cursor = db_con.cursor(buffered=True)
-        cursor.execute(
-                "INSERT INTO messages (sender, text) VALUES (%s, %s)", 
-                (f"{message.sender}", f"{message.text}")
-            )
-        db_con.commit()
-        db_con.close()
-        return "Message sent!"
-    except Exception as e:
-        return str(e)
+        with __open_connection() as db_con:
+            with db_con.cursor(buffered=True) as cursor:
+                cursor.execute(
+                        f"INSERT INTO {message_table} (sender, text) VALUES (%s, %s)", 
+                        (f"{message.sender}", f"{message.text}")
+                    )
+                db_con.commit()
+                db_con.close()
+                return "Message sent!"
+    except Exception as ex:
+        raise ex
