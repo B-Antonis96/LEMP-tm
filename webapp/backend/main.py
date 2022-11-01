@@ -2,7 +2,6 @@
 from typing import Union
 from fastapi import FastAPI
 from models.message import Message
-from models.user import User
 import services.db_service as db
 import services.conf_service as conf
 

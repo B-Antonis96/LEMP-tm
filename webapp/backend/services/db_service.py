@@ -3,7 +3,7 @@ import mysql.connector
 from mysql.connector import MySQLConnection, CMySQLConnection
 from models.message import Message
 from models.user import User
-import conf_service as conf
+import services.conf_service as conf
 
 #########################
 ### SERVICE: Database ###
@@ -18,7 +18,7 @@ def __open_connection() -> CMySQLConnection | MySQLConnection:
     try:
         return mysql.connector.connect(
             host = conf.DB_HOST,
-            port = conf.DB_PORT,
+            port = "3306",
             user = conf.DB_USER,
             password = conf.DB_PASSWORD,
             database = conf.DB_DATABASE

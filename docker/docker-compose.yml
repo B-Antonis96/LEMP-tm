@@ -1,13 +1,19 @@
-version: "3"
+version: "3.9"
 
 services:
-  mariadb:
-    image: "mariadb"
+  # webserver:
+  #   container_name: 'E_ngnix'
+
+  database:
+    container_name: 'M_ariadb'
+    image: "mariadb:latest"
     restart: 'always'
     volumes: 
-      - mariadb:/var/lib/mysql
+      - "database:/var/lib/mysql"
+      - "./lemp.sql:/docker-entrypoint-initdb.d/lemp.sql:ro"
     environment:
-      MYSQL_ROOT_PASSWORD: "insecure"
+      MARIADB_ROOT_PASSWORD: 'insecure'
+      MYSQL_ROOT_PASSWORD: 'insecure'
       MYSQL_DATABASE: "${DB_DATABASE}"
       MYSQL_USER: "${DB_USER}"
       MYSQL_PASSWORD: "${DB_PASSWORD}"
@@ -15,10 +21,10 @@ services:
     #   backend:
     #     ipv4_address: "${DB_HOST}"
     ports:
-      - "3306:${DB_PORT}"
+      - "${DB_PORT}:3306"
     
 volumes:
-  mariadb:
+  database:
     driver: local
 
 # networks:
