@@ -1,9 +1,6 @@
 #!/usr/bin/env python
-from curses.ascii import US
-from this import d
 import mysql.connector
-from mysql.connector import Error, MySQLConnection, CMySQLConnection
-from pydantic import BaseModel
+from mysql.connector import MySQLConnection, CMySQLConnection
 from models.message import Message
 from models.user import User
 import conf_service as conf
@@ -43,11 +40,6 @@ def get_all_entries(table: str):
                     return None
     except Exception as ex:
         raise ex
-
-# # Get all User entries
-# def get_users() -> list(User) | None:
-#     data = get_all_entries(user_table)
-#     for usr in data:
 
 
 # Get User entry with UID

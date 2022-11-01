@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  mariadb:
+    image: "mariadb"
+    restart: 'always'
+    volumes: 
+      - mariadb:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "insecure"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    # networks:
+    #   backend:
+    #     ipv4_address: "${DB_HOST}"
+    ports:
+      - "3306:${DB_PORT}"
+    
+volumes:
+  mariadb:
+    driver: local
+
+# networks:
+#   backend:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 172.16.20.0/24
+#           gateway: 172.16.20.1
+#   frontend:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 172.16.10.0/24
+#           gateway: 172.16.10.1
