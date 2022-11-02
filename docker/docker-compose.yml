@@ -1,16 +1,29 @@
 version: "3.9"
 
 services:
-  # webserver:
-  #   container_name: 'E_ngnix'
+
+  webserver:
+    container_name: 'NGINX'
+    image: "nginx:latest"
+    restart: 'always'
+    volumes:
+      - webserver_storage:/var/www/html:ro
+    # networks:
+    #   frontend:
+    #     ipv4_address: "172.16.10.22
+    ports:
+      - "${DB_PORT}:3306"
+
+  # backend:
+  #   container_name: 'FastAPI'
 
   database:
-    container_name: 'M_ariadb'
+    container_name: 'MariaDB'
     image: "mariadb:latest"
     restart: 'always'
     volumes: 
-      - "database:/var/lib/mysql"
-      - "./lemp.sql:/docker-entrypoint-initdb.d/lemp.sql:ro"
+      - "database_storage:/var/lib/mysql"
+      - "./database/:/docker-entrypoint-initdb.d/:ro"
     environment:
       MARIADB_ROOT_PASSWORD: 'insecure'
       MYSQL_ROOT_PASSWORD: 'insecure'
@@ -24,7 +37,9 @@ services:
       - "${DB_PORT}:3306"
     
 volumes:
-  database:
+  database_storage:
+    driver: local
+  webserver_storage:
     driver: local
 
 # networks:

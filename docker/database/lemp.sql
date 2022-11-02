@@ -1,3 +1,6 @@
+----------------------
+--< DB User config >--
+----------------------
 CREATE USER IF NOT EXISTS root@localhost IDENTIFIED BY 'insecure';
 SET PASSWORD FOR root@localhost = PASSWORD('insecure');
 GRANT ALL ON *.* TO root@localhost WITH GRANT OPTION;
@@ -9,13 +12,11 @@ SET PASSWORD FOR lemp@'%' = PASSWORD('lemp');
 CREATE DATABASE IF NOT EXISTS lemp;
 GRANT ALL ON lemp.* TO lemp@'%';
 
+-----------------------
+--< DB Table config >--
+-----------------------
 USE lemp
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    uid VARCHAR(255),
-    name VARCHAR(255)
-);
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sender VARCHAR(255),
     text TEXT

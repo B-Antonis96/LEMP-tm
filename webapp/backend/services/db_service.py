@@ -2,7 +2,6 @@
 import mysql.connector
 from mysql.connector import MySQLConnection, CMySQLConnection
 from models.message import Message
-from models.user import User
 import services.conf_service as conf
 
 #########################
@@ -12,6 +11,9 @@ import services.conf_service as conf
 # Declarations
 user_table: str = "users"
 message_table: str = "messages"
+
+#########################
+### PRIVATE FUNCTIONS ###
 
 # Try connect to database
 def __open_connection() -> CMySQLConnection | MySQLConnection:
@@ -27,7 +29,7 @@ def __open_connection() -> CMySQLConnection | MySQLConnection:
         raise ex
 
 # Get all entries from table
-def get_all_entries(table: str):
+def __get_all_entries(table: str):
     try:
         with __open_connection() as db_con:
             with db_con.cursor(buffered=True) as cursor:
@@ -37,38 +39,40 @@ def get_all_entries(table: str):
                 if data:
                     return data
                 else:
-                    return None
+                    return f"No entries for {table} found!"
     except Exception as ex:
         raise ex
 
-
-# Get User entry with UID
-def get_user(uid: str) -> User | None:
-    try:
-        with __open_connection() as db_con:
-            with db_con.cursor(buffered=True) as cursor:
-                cursor.execute(f"SELECT * FROM {user_table} WHERE 'uid' = {uid}")
-                data = cursor.fetchone()
-                db_con.close()
-                return User(uid=data['uid'], name=data['name']) if data else None
-    except Exception as ex:
-        raise ex
-
-# Get all Message entries
-def get_messages():
-    return get_all_entries(user_table)
-
-# Insert entry into "Messages"
-def insert_message(message: Message) -> str:
+# Insert entry into database
+def __insert_entry(operation: str, *params: str):
     try:
         with __open_connection() as db_con:
             with db_con.cursor(buffered=True) as cursor:
                 cursor.execute(
-                        f"INSERT INTO {message_table} (sender, text) VALUES (%s, %s)", 
-                        (f"{message.sender}", f"{message.text}")
-                    )
+                    operation , 
+                    (params) 
+                )
                 db_con.commit()
                 db_con.close()
-                return "Message sent!"
+                return True
     except Exception as ex:
         raise ex
+
+########################
+### PUBLIC FUNCTIONS ###
+
+### Messages ###
+# Get all Message entries
+def get_messages():
+    data = __get_all_entries(message_table)
+    messages: list[Message] = []
+    for mssg in data:
+        messages.append(Message(mssg))
+    return messages
+
+# Insert entry into "Messages"
+def insert_message(message: Message):
+    if __insert_entry(f"INSERT INTO {message_table} (sender, text) VALUES (%s, %s)", \
+    f"{message.sender}", f"{message.text}") is True:
+        return "Message send!"
+    
