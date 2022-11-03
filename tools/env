@@ -1,7 +1,0 @@
-# Backend
-export APPLICATION="LEMP-tm"
-#export DB_HOST="172.16.20.12"
-export DB_HOST="localhost"
-export DB_USER="lemp"
-export DB_PASSWORD="lemp"
-export DB_DATABASE="lemp"

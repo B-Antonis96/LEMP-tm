@@ -4,7 +4,7 @@ services:
 
   webserver:
     container_name: 'NGINX'
-    image: "nginx:latest"
+    image: "nginx:1.22.1"
     restart: 'always'
     volumes:
       - webserver_storage:/var/www/html:ro
@@ -12,15 +12,31 @@ services:
     #   frontend:
     #     ipv4_address: "172.16.10.22
     ports:
-      - "8080:80"
+      - "8600:80"
       # - "8443:443"
 
-  # backend:
-  #   container_name: 'FastAPI'
+  backend:
+    container_name: 'FastAPI'
+    image: backend
+    build: 
+      context: backend
+      dockerfile: backend.Dockerfile
+    restart: 'always'
+    environment:
+      APPLICATION: "${APPLICATION}"
+      DB_HOST: "${DB_HOST}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_DATABASE: "${DB_DATABASE}"
+    # networks:
+    #   frontend:
+    #     ipv4_address: "${APP_HOST}"
+    ports:
+      - "8800:8000"
 
   database:
     container_name: 'MariaDB'
-    image: "mariadb:latest"
+    image: "mariadb:10.9.3"
     restart: 'always'
     volumes: 
       - "database_storage:/var/lib/mysql"
@@ -35,12 +51,14 @@ services:
     #   backend:
     #     ipv4_address: "${DB_HOST}"
     ports:
-      - "${DB_PORT}:3306"
+      - "8900:3306"
     
 volumes:
   database_storage:
     driver: local
   webserver_storage:
+    driver: local
+  backend_storage:
     driver: local
 
 # networks:
