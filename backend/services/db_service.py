@@ -18,7 +18,7 @@ def __open_connection():
             host = conf.DB_HOST,
             port = "3306",
             user = conf.DB_USER,
-            password = conf.DB_PASSWORD,
+            password = "lemp".encode('utf-8'),
             database = conf.DB_DATABASE
         )
     except Exception as ex:

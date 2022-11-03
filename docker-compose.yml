@@ -8,11 +8,11 @@ services:
     restart: 'always'
     volumes:
       - webserver_storage:/var/www/html:ro
-    # networks:
-    #   frontend:
-    #     ipv4_address: "172.16.10.22
+    networks:
+      frontend:
+        ipv4_address: "172.16.10.22"
     ports:
-      - "8600:80"
+      - "80:80"
       # - "8443:443"
 
   backend:
@@ -27,11 +27,11 @@ services:
       DB_USER: "${DB_USER}"
       DB_PASSWORD: "${DB_PASSWORD}"
       DB_DATABASE: "${DB_DATABASE}"
-    # networks:
-    #   frontend:
-    #     ipv4_address: "${APP_HOST}"
+    networks:
+      backend:
+        ipv4_address: "${APP_HOST}"
     ports:
-      - "8800:8000"
+      - "8000:8000"
 
   database:
     container_name: 'MariaDB'
@@ -46,11 +46,11 @@ services:
       MYSQL_DATABASE: "${DB_DATABASE}"
       MYSQL_USER: "${DB_USER}"
       MYSQL_PASSWORD: "${DB_PASSWORD}"
-    # networks:
-    #   backend:
-    #     ipv4_address: "${DB_HOST}"
+    networks:
+      backend:
+        ipv4_address: "${DB_HOST}"
     ports:
-      - "8900:3306"
+      - "3306:3306"
     
 volumes:
   database_storage:
@@ -60,16 +60,16 @@ volumes:
   backend_storage:
     driver: local
 
-# networks:
-#   backend:
-#     driver: bridge
-#     ipam:
-#       config:
-#         - subnet: 172.16.20.0/24
-#           gateway: 172.16.20.1
-#   frontend:
-#     driver: bridge
-#     ipam:
-#       config:
-#         - subnet: 172.16.10.0/24
-#           gateway: 172.16.10.1
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.20.0/24
+          gateway: 172.16.20.1
+  frontend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.10.0/24
+          gateway: 172.16.10.1
