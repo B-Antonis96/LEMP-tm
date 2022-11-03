@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import mysql.connector
-from mysql.connector import MySQLConnection, CMySQLConnection
 from models.message import Message
 import services.conf_service as conf
 
@@ -13,7 +12,7 @@ user_table: str = "users"
 message_table: str = "messages"
 
 # Try connect to database
-def __open_connection() -> CMySQLConnection | MySQLConnection:
+def __open_connection():
     try:
         return mysql.connector.connect(
             host = conf.DB_HOST,

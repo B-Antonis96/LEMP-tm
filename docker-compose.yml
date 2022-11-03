@@ -18,10 +18,9 @@ services:
   backend:
     container_name: 'FastAPI'
     image: backend
-    build: 
-      context: backend
-      dockerfile: backend.Dockerfile
     restart: 'always'
+    volumes:
+      - "backend_storage:/fastapi"
     environment:
       APPLICATION: "${APPLICATION}"
       DB_HOST: "${DB_HOST}"
