@@ -12,7 +12,8 @@ services:
     #   frontend:
     #     ipv4_address: "172.16.10.22
     ports:
-      - "${DB_PORT}:3306"
+      - "8080:80"
+      # - "8443:443"
 
   # backend:
   #   container_name: 'FastAPI'

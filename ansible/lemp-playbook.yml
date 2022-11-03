@@ -1,0 +1,16 @@
+---
+
+- name: Install LEMP Stack (Ubuntu)
+  hosts: localhost
+  remote_user: bryan
+  become: true
+
+  tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - nginx
+          - mariadb-server
+        state: present
+
+...

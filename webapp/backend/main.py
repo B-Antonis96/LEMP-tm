@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from typing import Union
 from fastapi import FastAPI
 import uvicorn
 from models.message import Message
@@ -17,15 +16,14 @@ app = FastAPI()
 @app.get("/")
 async def get_root():
     info = conf.APPLICATION
-    return {"Hello": "root" if info is None else info}
+    return {"Hello": info if info else "root"}
 
-### MESSAGES ###
 # Get messages
 @app.get("/messages/")
 async def get_messages():
     return db.get_messages()
 
-# Post target
+# Post message
 @app.post("/messages/")
 async def post_message(message: Message):
     return db.insert_message(message)
