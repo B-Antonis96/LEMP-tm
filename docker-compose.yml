@@ -41,8 +41,8 @@ services:
       - "database_storage:/var/lib/mysql"
       - "./database/:/docker-entrypoint-initdb.d/:ro"
     environment:
-      MARIADB_ROOT_PASSWORD: 'insecure'
-      MYSQL_ROOT_PASSWORD: 'insecure'
+      MARIADB_ROOT_PASSWORD: DB_PASSWORD_ROOT
+      MYSQL_ROOT_PASSWORD: DB_PASSWORD_ROOT
       MYSQL_DATABASE: "${DB_DATABASE}"
       MYSQL_USER: "${DB_USER}"
       MYSQL_PASSWORD: "${DB_PASSWORD}"
