@@ -17,6 +17,9 @@ services:
 
   backend:
     container_name: 'FastAPI'
+    build:
+      context: .
+      dockerfile: ./backend.Dockerfile
     image: backend
     restart: 'always'
     volumes:
