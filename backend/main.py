@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from models.message import Message
 import services.db_service as db
@@ -11,6 +12,14 @@ import services.conf_service as conf
 
 # FastAPI
 app = FastAPI()
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 # Get root
 @app.get("/")

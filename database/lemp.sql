@@ -21,3 +21,5 @@ CREATE TABLE IF NOT EXISTS messages (
     sender VARCHAR(255),
     text TEXT
 );
+INSERT INTO messages (sender, text)
+VALUES ('', 'Bryan Antonis');

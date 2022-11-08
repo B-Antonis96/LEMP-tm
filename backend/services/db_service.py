@@ -36,7 +36,7 @@ def get_messages():
                 if data:
                     messages: list[Message] = []
                     for mssg in data:
-                        messages.append(Message(sender=mssg[1], text=mssg[2]))
+                        messages.append(Message(id=mssg[0], sender=mssg[1], text=mssg[2]))
                     return messages
                 else:
                     return f"No entries for {message_table} found!"
