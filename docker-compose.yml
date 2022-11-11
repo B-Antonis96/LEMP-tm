@@ -4,7 +4,8 @@ services:
 
   webserver:
     container_name: 'NGINX'
-    image: "nginx:1.22.1"
+    hostname: 'webserver01'
+    image: "nginx:${NGINX_VERSION}"
     restart: 'always'
     volumes:
       - "webserver_storage:/var/www/html"
@@ -19,6 +20,7 @@ services:
 
   backend:
     container_name: 'FastAPI'
+    hostname: 'backend01'
     build:
       context: .
       dockerfile: ./backend.Dockerfile
@@ -40,7 +42,8 @@ services:
 
   database:
     container_name: 'MariaDB'
-    image: "mariadb:10.9.3"
+    hostname: 'database01'
+    image: "mariadb:${MARIADB_VERSION}"
     restart: 'always'
     volumes: 
       - "database_storage:/var/lib/mysql"

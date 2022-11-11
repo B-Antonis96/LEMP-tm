@@ -7,7 +7,7 @@
 
   tasks:
     - name: Install required packages
-      ansible.builtin.package:
+      ansible.builtin.apt:
         name:
           - python3.10
           - python3-pip

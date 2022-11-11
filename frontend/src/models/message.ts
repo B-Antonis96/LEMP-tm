@@ -1,5 +1,4 @@
-import React from 'react';
-
+// Base message model
 type Message = {
     sender: string;
     text: string;

@@ -9,12 +9,12 @@ SET PASSWORD FOR root@'%' = PASSWORD('insecure');
 GRANT ALL ON *.* TO root@'%' WITH GRANT OPTION;
 CREATE USER IF NOT EXISTS lemp@'%' IDENTIFIED BY 'lemp';
 SET PASSWORD FOR lemp@'%' = PASSWORD('lemp');
-CREATE DATABASE IF NOT EXISTS lemp;
 GRANT ALL ON lemp.* TO lemp@'%';
 
 -----------------------
 --< DB Table config >--
 -----------------------
+CREATE DATABASE IF NOT EXISTS lemp;
 USE lemp
 CREATE TABLE IF NOT EXISTS messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
