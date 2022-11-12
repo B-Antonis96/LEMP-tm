@@ -1,14 +1,17 @@
 import React from "react";
-
 import axios from 'axios';
 
+//////////////////////
+// COM: MessageList //
+//////////////////////
 export default class MessageList extends React.Component {
   state = {
     messages: []
   }
 
+  // On mount execute GET messages request
   componentDidMount() {
-    axios(`http://127.0.0.1:8000/messages`, {
+    axios('http://' + process.env.REACT_APP_BACKEND + '/messages', {
       method: 'GET'
     }).then(response => {
         const messages = response.data;
@@ -16,17 +19,16 @@ export default class MessageList extends React.Component {
       })
   }
 
+  // Render the React Component
   render() {
-    const divStyle = {
-        borderColor: 'coral'
-    }
     const senderStyle = {
         color: 'red'
     }
     return (
+      // Foreach message in state, map to html object
         this.state.messages.map(
             message => 
-                <div key={message['id']} style={divStyle}>
+                <div key={message['id']}>
                     <p style={senderStyle}>{message['sender']}</p>
                     <p> {message['text']}</p>
                 </div>

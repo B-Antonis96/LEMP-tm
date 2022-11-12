@@ -1,13 +1,15 @@
-import { env } from 'process';
 import React from 'react';
 import './App.css';
 import MessageList from './components/messageList';
 
+///////////////
+// MAIN: App //
+///////////////
 const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Welkom bij mijn eindopdracht!</h1>
+        <h1>{process.env.REACT_APP_TITLE}</h1>
         <MessageList />
       </header>
     </div>

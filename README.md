@@ -88,7 +88,7 @@ npm run build
 cd ..
 ```
 Copy the contents of the build directory:
-``console
+```console
 sudo cp -r ./frontend/build/* /var/www/html/
 ```
 ### `Backend`
@@ -103,4 +103,8 @@ sudo apt install -y python3.10 python3-pip
 Install project pip packages:
 ```console
 pip install -r ./requirements.txt
+```
+Copy the contents of the backend directory:
+```console
+sudo cp -r ./backend/* /var/www/api/
 ```

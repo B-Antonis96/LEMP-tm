@@ -5,11 +5,17 @@ services:
   webserver:
     container_name: 'NGINX'
     hostname: 'webserver01'
-    image: "nginx:${NGINX_VERSION}"
+    build:
+      context: .
+      dockerfile: ./frontend.Dockerfile
+    image: 'frontend'
     restart: 'always'
+    environment:
+      REACT_APP_NAME: "${REACT_APP_NAME}"
+      REACT_APP_TITLE: "${REACT_APP_TITLE}"
+      REACT_APP_HOST: "${REACT_APP_HOST}"
+      REACT_APP_BACKEND: "${REACT_APP_BACKEND}"
     volumes:
-      - "webserver_storage:/var/www/html"
-      - "./frontend/build/:/var/www/html:ro"
       - "./linux/nginx/:/etc/nginx/conf.d/:ro"
     networks:
       frontend:
@@ -24,10 +30,8 @@ services:
     build:
       context: .
       dockerfile: ./backend.Dockerfile
-    image: backend
+    image: 'backend'
     restart: 'always'
-    volumes:
-      - "backend_storage:/fastapi"
     environment:
       APPLICATION: "${APPLICATION}"
       DB_HOST: "${DB_HOST}"
@@ -62,10 +66,6 @@ services:
     
 volumes:
   database_storage:
-    driver: local
-  webserver_storage:
-    driver: local
-  backend_storage:
     driver: local
 
 networks:
