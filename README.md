@@ -75,7 +75,7 @@ Copy the configuration file from the project directory to Nginx config:
 ```console
 sudo cp ./linux/nginx/default.conf /etc/nginx/conf.d
 ```
-Install Nodejs
+Install Nodejs:
 ```console
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
@@ -107,4 +107,20 @@ pip install -r ./requirements.txt
 Copy the contents of the backend directory:
 ```console
 sudo cp -r ./backend/* /var/www/api/
+```
+Copy the service file to the system directory:
+```console
+sudo cp ./linux/backend/lemp-backend.service /etc/systemd/system/
+```
+Reload the systemd:
+```console
+sudo systemctl daemon-reload
+```
+Enable the lamp-backend service:
+```console
+sudo systemctl enable lamp-backend
+```
+Start the lamp-backend service:
+```console
+sudo systemctl start lamp-backend
 ```
