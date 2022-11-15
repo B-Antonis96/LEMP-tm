@@ -9,9 +9,13 @@ export default class MessageList extends React.Component {
     messages: []
   }
 
+  hostIn = process.env.REACT_APP_BACKEND;
+  host = (this.hostIn !== undefined && this.hostIn !== null ? this.hostIn : 'localhost');
+  
+
   // On mount execute GET messages request
   componentDidMount() {
-    axios('http://' + process.env.REACT_APP_BACKEND + '/messages', {
+    axios('http://' + this.host + '/messages', {
       method: 'GET'
     }).then(response => {
         const messages = response.data;

@@ -24,81 +24,96 @@ Following installation only implies to Ubuntu setup.
 * Fresh installed Ubuntu machine
 * Project files (Lemp-tm)
 ### `Base`
+Become the root user:
+```console
+sudo -i
+```
+Move the project directory (from downloaded location):
+```console
+mv ./Lemp-tm /opt
+```
+Access the project directory:
+```console
+cd /opt/LEMP-tm
+```
 Install updates:
 ```console
-sudo apt update && sudo apt dist-upgrade -y
+apt update && apt dist-upgrade -y
 ```
+When UI shows prompts for restarting services:
+* press TAB
+* press ENTER
+  
 Firewall settings:
 ```console
-sudo ufw limit ssh
-sudo ufw enable
+ufw limit ssh &&\
+ufw enable
 ```
 Optional firewall settings (dev tools):
 ```console
-sudo ufw allow 8000
-sudo ufw allow 3306
-sudo ufw reload
+ufw allow 8000 &&\
+ufw allow 3306 &&\
+ufw reload
 ```
+Export following environment variables:
+```code
+cat << EOF >> /etc/environment
+APPLICATION="LEMP-tm"
+DB_HOST="localhost"
+DB_USER="lemp"
+DB_PASSWORD="lemp"
+DB_DATABASE="lemp"
+REACT_APP_NAME=$APPLICATION
+REACT_APP_TITLE="Welkom bij mijn eindopdracht!"
+REACT_APP_BACKEND="localhost:8000"
+EOF
+```
+Source the environment file:
+```console
+source /etc/environment
+```
+
 ### `Database`
 Install MariaDB server:
 ```console
-sudo apt install mariadb-server -y
+apt install mariadb-server -y
 ```
 Start configuration of database:
 ```console
-sudo mysql_secure_installation
+mysql_secure_installation
 ```
 Following prompts must be handled:
 * "Enter current password for root" -> `none (ENTER)`
 * "Switch to unix_socket authentication" -> `n`
-* "Set root password?" -> `n`
+* "Set root password?" -> `Y`
+  * Password: `insecure`
+  * Re-enter password
 * "Remove anonymous users?" -> `Y`
-* "Disallow root login remotely?" -> `Y`
+* "Disallow root login remotely?" -> `n`
 * "Remove test database and access to it?" -> `Y`
 * "Reload privilege tables now? " -> `Y`
 
+Copy configuration to mysql directory:
+```console
+cp ./database/my.cnf /etc/mysql/conf.d/
+```
+Restart MariaDB service:
+```console
+systemctl restart mariadb
+```
 Run lemp.sql file from the project directory:
 ```console
-sudo mysql < ./database/lemp.sql
+mysql < ./database/lemp.sql
 ```
-### `Webserver`
-Install Nginx webserver:
-```console
-sudo apt install nginx -y
-```
-Set firewall rules:
-```console
-sudo ufw allow 'Nginx HTTP'
-sudo ufw reload
-```
-Copy the configuration file from the project directory to Nginx config:
-```console
-sudo cp ./linux/nginx/default.conf /etc/nginx/conf.d
-```
-Install Nodejs:
-```console
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs
-```
-Build the frontend:
-```console
-cd frontend/
-npm install
-npm run build
-cd ..
-```
-Copy the contents of the build directory:
-```console
-sudo cp -r ./frontend/build/* /var/www/html/
-```
+
 ### `Backend`
-Create project directory:
+Create api directory:
 ```console
-sudo mkdir /var/www/api
+mkdir /var/www/api
 ```
 Install required packages:
 ```console
-sudo apt install -y python3.10 python3-pip
+apt install -y python3.10 python3-pip
 ```
 Install project pip packages:
 ```console
@@ -106,21 +121,50 @@ pip install -r ./requirements.txt
 ```
 Copy the contents of the backend directory:
 ```console
-sudo cp -r ./backend/* /var/www/api/
+cp -r ./backend/* /var/www/api/
 ```
 Copy the service file to the system directory:
 ```console
-sudo cp ./linux/backend/lemp-backend.service /etc/systemd/system/
+cp ./linux/backend/lemp-backend.service /etc/systemd/system/
 ```
-Reload the systemd:
+Enable and start the backend service:
 ```console
-sudo systemctl daemon-reload
+systemctl daemon-reload &&\
+systemctl enable lemp-backend &&\
+systemctl start lemp-backend
 ```
-Enable the lamp-backend service:
+
+### `Webserver`
+Install Nginx webserver:
 ```console
-sudo systemctl enable lamp-backend
+apt install nginx -y
 ```
-Start the lamp-backend service:
+Set firewall rules:
 ```console
-sudo systemctl start lamp-backend
+ufw allow 'Nginx HTTP' &&\
+ufw reload
+```
+Copy the configuration file from the project directory to Nginx config:
+```console
+cp ./linux/nginx/default.conf /etc/nginx/conf.d
+```
+Install Nodejs:
+```console
+curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
+apt install -y nodejs
+```
+Build the frontend:
+```console
+cd frontend/ &&\
+npm install &&\
+npm run build &&\
+cd ..
+```
+Copy the contents of the build directory:
+```console
+cp -r ./frontend/build/* /var/www/html/
+```
+Restart Nginx service:
+```console
+systemctl restart nginx
 ```

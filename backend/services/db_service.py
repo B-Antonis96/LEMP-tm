@@ -8,17 +8,16 @@ import services.conf_service as conf
 #########################
 
 # Declarations
-user_table: str = "users"
-message_table: str = "messages"
+user_table: str = 'users'
+message_table: str = 'messages'
 
 # Try connect to database
 def __open_connection():
     try:
         return mysql.connector.connect(
             host = conf.DB_HOST,
-            port = "3306",
             user = conf.DB_USER,
-            password = "lemp".encode('utf-8'),
+            password = conf.DB_PASSWORD,
             database = conf.DB_DATABASE
         )
     except Exception as ex:
@@ -54,6 +53,6 @@ def insert_message(message: Message):
                 )
                 db_con.commit()
                 db_con.close()
-                return "Message send!"
+                return 'Message send!'
     except Exception as ex:
         raise ex

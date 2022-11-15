@@ -10,11 +10,6 @@ services:
       dockerfile: ./frontend.Dockerfile
     image: 'frontend'
     restart: 'always'
-    environment:
-      REACT_APP_NAME: "${REACT_APP_NAME}"
-      REACT_APP_TITLE: "${REACT_APP_TITLE}"
-      REACT_APP_HOST: "${REACT_APP_HOST}"
-      REACT_APP_BACKEND: "${REACT_APP_BACKEND}"
     volumes:
       - "./linux/nginx/:/etc/nginx/conf.d/:ro"
     networks:
@@ -53,8 +48,8 @@ services:
       - "database_storage:/var/lib/mysql"
       - "./database/:/docker-entrypoint-initdb.d/:ro"
     environment:
-      MARIADB_ROOT_PASSWORD: DB_PASSWORD_ROOT
-      MYSQL_ROOT_PASSWORD: DB_PASSWORD_ROOT
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD_ROOT}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD_ROOT}"
       MYSQL_DATABASE: "${DB_DATABASE}"
       MYSQL_USER: "${DB_USER}"
       MYSQL_PASSWORD: "${DB_PASSWORD}"

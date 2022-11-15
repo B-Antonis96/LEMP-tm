@@ -5,7 +5,7 @@ import App from './App';
 
 // Declaring title for tab
 let title = process.env.REACT_APP_NAME;
-document.title = title ? title : 'Undefined';
+document.title = title ? title : 'LEMP-tm';
 
 // Declaring root for ReactDOM
 const root = ReactDOM.createRoot(
