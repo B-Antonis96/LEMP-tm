@@ -12,13 +12,10 @@ import services.conf_service as conf
 
 # FastAPI
 app = FastAPI()
-origins = [
-    "*"
-]
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    # allow_origin_regex='http?://.*',
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

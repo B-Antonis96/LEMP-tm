@@ -30,7 +30,7 @@ sudo -i
 ```
 Move the project directory (from downloaded location):
 ```console
-mv ./Lemp-tm /opt
+mv ./LEMP-tm /opt
 ```
 Access the project directory:
 ```console
@@ -54,23 +54,6 @@ Optional firewall settings (dev tools):
 ufw allow 8000 &&\
 ufw allow 3306 &&\
 ufw reload
-```
-Export following environment variables:
-```code
-cat << EOF >> /etc/environment
-APPLICATION="LEMP-tm"
-DB_HOST="localhost"
-DB_USER="lemp"
-DB_PASSWORD="lemp"
-DB_DATABASE="lemp"
-REACT_APP_NAME=$APPLICATION
-REACT_APP_TITLE="Welkom bij mijn eindopdracht!"
-REACT_APP_BACKEND="localhost:8000"
-EOF
-```
-Source the environment file:
-```console
-source /etc/environment
 ```
 
 ### `Database`
@@ -97,19 +80,19 @@ Copy configuration to mysql directory:
 ```console
 cp ./database/my.cnf /etc/mysql/conf.d/
 ```
-Restart MariaDB service:
-```console
-systemctl restart mariadb
-```
 Run lemp.sql file from the project directory:
 ```console
 mysql < ./database/lemp.sql
+```
+Restart MariaDB service:
+```console
+systemctl restart mariadb
 ```
 
 ### `Backend`
 Create api directory:
 ```console
-mkdir /var/www/api
+mkdir -p /var/www/api
 ```
 Install required packages:
 ```console
