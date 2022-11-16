@@ -12,20 +12,22 @@ import services.conf_service as conf
 
 # FastAPI
 app = FastAPI()
-origins = ["*"]
+origins = [
+    "*"
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    # allow_origin_regex='http?://.*',
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 # Get root
 @app.get("/")
 async def get_root():
-    info = conf.APPLICATION
-    return {"Hello": info if info else "root"}
+    return {"Hello": conf.APPLICATION}
 
 # Get messages
 @app.get("/messages/")

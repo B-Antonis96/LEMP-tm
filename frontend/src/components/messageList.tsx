@@ -10,7 +10,7 @@ export default class MessageList extends React.Component {
   }
 
   hostIn = process.env.REACT_APP_BACKEND;
-  host = (this.hostIn !== undefined && this.hostIn !== null ? this.hostIn : 'localhost');
+  host = (this.hostIn !== undefined && this.hostIn !== null ? this.hostIn : 'localhost:8000');
   
 
   // On mount execute GET messages request
