@@ -3,30 +3,29 @@ version: "3.9"
 services:
 
   webserver:
-    container_name: 'NGINX'
-    hostname: 'webserver01'
+    container_name: NGINX
     build:
       context: .
       dockerfile: ./frontend.Dockerfile
-    image: 'frontend'
-    restart: 'always'
+      args:
+        # REACT_APP_BACKEND: lemp-tm:8000  #<<!! uncomment for non local dev
+        REACT_APP_TITLE: 'Welkom bij mijn eindproject in Docker!'
+    image: frontend
+    restart: always
     volumes:
-      - "./linux/nginx/:/etc/nginx/conf.d/:ro"
+      - ./linux/nginx/:/etc/nginx/conf.d/:ro
     networks:
-      frontend:
-        ipv4_address: "172.16.10.22"
+      - lemp
     ports:
-      - "80:80"
-      # - "8443:443"
+      - 80:80
 
   backend:
-    container_name: 'FastAPI'
-    hostname: 'backend01'
+    container_name: FastAPI
     build:
       context: .
       dockerfile: ./backend.Dockerfile
-    image: 'backend'
-    restart: 'always'
+    image: backend
+    restart: always
     environment:
       APPLICATION: "${APPLICATION}"
       DB_HOST: "${DB_HOST}"
@@ -34,19 +33,17 @@ services:
       DB_PASSWORD: "${DB_PASSWORD}"
       DB_DATABASE: "${DB_DATABASE}"
     networks:
-      backend:
-        ipv4_address: "${APP_HOST}"
+      - lemp
     ports:
-      - "8000:8000"
+      - 8000:8000
 
   database:
-    container_name: 'MariaDB'
-    hostname: 'database01'
+    container_name: MariaDB
     image: "mariadb:${MARIADB_VERSION}"
     restart: 'always'
     volumes: 
-      - "database_storage:/var/lib/mysql"
-      - "./database/:/docker-entrypoint-initdb.d/:ro"
+      - database_storage:/var/lib/mysql
+      - ./database/:/docker-entrypoint-initdb.d/:ro
     environment:
       MARIADB_ROOT_PASSWORD: "${DB_PASSWORD_ROOT}"
       MYSQL_ROOT_PASSWORD: "${DB_PASSWORD_ROOT}"
@@ -54,23 +51,32 @@ services:
       MYSQL_USER: "${DB_USER}"
       MYSQL_PASSWORD: "${DB_PASSWORD}"
     networks:
-      backend:
-        ipv4_address: "${DB_HOST}"
+      - lemp
     ports:
-      - "3306:3306"
+      - 3306:3306
+
+  management:
+    container_name: Portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - management_storage:/data
+    networks:
+      - lemp
+    ports:
+      - 9000:9000
     
 volumes:
   database_storage:
     driver: local
+  management_storage:
+    driver: local
 
 networks:
-  backend:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.16.20.0/24
-          gateway: 172.16.20.1
-  frontend:
+  lemp:
     driver: bridge
     ipam:
       config:

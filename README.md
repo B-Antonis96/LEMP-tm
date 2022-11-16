@@ -136,10 +136,16 @@ Install Nodejs:
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
 apt install -y nodejs
 ```
+`!!!` Do NOT set following environment variable for LOCAL development:
+```console
+export REACT_APP_BACKEND="$HOSTNAME:8000"
+```
+`!` *Repeat all following steps after 'redeclaring' the `REACT_APP_BACKEND` variable* `!`
+
 Build the frontend:
 ```console
 cd frontend/ &&\
-npm install &&\
+npm install &&\ 
 npm run build &&\
 cd ..
 ```

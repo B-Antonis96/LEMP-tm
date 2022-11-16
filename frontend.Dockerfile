@@ -1,8 +1,8 @@
 FROM node:alpine as build-stage
 WORKDIR /app
-# ENV REACT_APP_NAME="LEMP App"
-# ENV REACT_APP_TITLE="Welkom bij mijn eindopdracht!"
-# ENV REACT_APP_BACKEND="localhost:8000"
+ARG REACT_APP_NAME
+ARG REACT_APP_TITLE
+ARG REACT_APP_BACKEND
 COPY frontend ./
 RUN npm install
 RUN npm run build
