@@ -2,20 +2,19 @@
 
 - name: Install LEMP Stack (Ubuntu)
   hosts: "{{ server_hosts }}"
-
-  # Default variables
+  remote_user: bryan
+  become: true
   vars:
     project_path: ~/Desktop/LEMP-tm
+    # project_path: /opt/LEMP-tm #<< Local installation
     mysql_root_password: "insecure"
     local: false
+    # local: true #<< Local installation
     development: true
     nodejs_version: 18
     os_environment:
       - key: REACT_APP_BACKEND
         value: "{{ ansible_nodename }}:8000"
-
-  remote_user: bryan
-  become: true
 
   tasks:
     ################################
