@@ -19,7 +19,7 @@ LEMP stack for school project, application hosts a website for displaying "messa
 * Docker: https://www.docker.com
 
 ## Installation (Linux)
-Following installation only implies to Ubuntu setup.
+`Following installation only implies to Ubuntu setup.`
 ### Pre-requirements:
 * Fresh installed Ubuntu machine
 * Project files (Lemp-tm)
@@ -156,4 +156,20 @@ cp -r ./frontend/build/* /var/www/html/
 Restart Nginx service:
 ```console
 systemctl restart nginx
+```
+
+## Automatization (Ansible)
+`Following installation (again) only implies to Ubuntu setup.`
+
+Start with installing necessary packages:
+```console
+sudo apt install ansible sshpass
+```
+When running the Ansible from same host (localhost) run following command:
+```console
+sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK
+```
+When running the Ansible from same host (localhost) run following command:
+```console
+sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK
 ```

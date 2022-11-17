@@ -36,6 +36,7 @@
           - python3-pip
           - nginx
           - mariadb-server
+          - PyMySQL
         state: present
 
     - name: Limit ssh
@@ -47,7 +48,7 @@
     - name: Allow WEB ports
       community.general.ufw:
         rule: allow
-        port: 'Nginx HTTP'
+        port: 80
         state: reloaded
 
     - name: Enable UFW
@@ -68,6 +69,10 @@
     ## Database Setup tasks ##
     ##########################
 
+    - name: Install PyMySQL with PIP
+      ansible.builtin.pip:
+        name: PyMySQL
+        
     # - name: Update MariaDB root password
     #   community.mysql.mysql_user:
     #     name: root
