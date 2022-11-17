@@ -5,12 +5,12 @@
   remote_user: bryan
   become: true
   vars:
-    project_path: ~/Desktop/LEMP-tm
+    project_path: ~/ #<< Add path where project is located
     # project_path: /opt/LEMP-tm #<< Local installation
     mysql_root_password: "insecure"
     local: false
     # local: true #<< Local installation
-    development: true
+    development: false
     nodejs_version: 18
     os_environment:
       - key: REACT_APP_BACKEND
@@ -70,7 +70,7 @@
     - name: Copy MariaDB files
       ansible.builtin.copy:
         src: "{{ project_path }}/database/"
-        dest: /etc/mysql/conf.d/
+        dest: /etc/mysql/mariadb.conf.d/
         remote_src: "{{ local }}"
         owner: mysql
         group: mysql
@@ -174,7 +174,7 @@
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
       with_items: "{{ os_environment }}"
-      when: not local
+      when: not development
 
     - name: Copy frontend directory
       ansible.builtin.copy:

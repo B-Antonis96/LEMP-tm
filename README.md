@@ -182,9 +182,17 @@ Go to the ansible directory:
 ```console
 cd /opt/LEMP-tm/linux/ansible
 ```
+### !! Consider !!
+Please take a look at the Ansible Playbook before running it! Some variables need to be declared and checked. When in development, set the ` development` variable to `true`. When installing from remote set `local` variable to `false`! Also the `path of the project` NEEDS to be specified, either the local or remote location, depending of the `local` variable.
+### Localhost
 Ansible will be run locally with following command:
 ```console
 sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK -v
+```
+### Remote
+Ansible will be run locally with following command:
+```console
+sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=lemp-tm-ansible" -kK -v
 ```
 
 ## Containerization (Docker)
