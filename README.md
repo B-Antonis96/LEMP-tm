@@ -21,13 +21,20 @@ LEMP stack for school project, application hosts a website for displaying "messa
 ### `Project Setup`
 *`Valid for all implementations!`*
 
-Become the root user:
-```console
-sudo -i
-```
 Find the project directory (downloaded from git):
 ```console
 ~ ./LEMP-tm
+```
+
+## Installation (Linux)
+`Following installation only implies to Ubuntu setup.`
+### Pre-requirements:
+* Fresh installed Ubuntu machine
+* Project files (Lemp-tm)
+### `Base`
+Become the root user:
+```console
+sudo -i
 ```
 Move the project directory (from downloaded location):
 ```console
@@ -37,13 +44,6 @@ Access the project directory:
 ```console
 cd /opt/LEMP-tm
 ```
-
-## Installation (Linux)
-`Following installation only implies to Ubuntu setup.`
-### Pre-requirements:
-* Fresh installed Ubuntu machine
-* Project files (Lemp-tm)
-### `Base`
 Install updates:
 ```console
 apt update && apt dist-upgrade -y
@@ -69,9 +69,24 @@ Install MariaDB server:
 ```console
 apt install mariadb-server -y
 ```
+Start configuration of database `(only for development)`:
+```console
+mysql_secure_installation
+```
+Following prompts must be handled (capital Y: default):
+* "Enter current password for root" -> `none (ENTER)`
+* "Switch to unix_socket authentication" -> `n`
+* "Set root password?" -> `Y`
+  * Password: "`insecure`"
+  * Re-enter password
+* "Remove anonymous users?" -> `Y`
+* "Disallow root login remotely?" -> `n`
+* "Remove test database and access to it?" -> `Y`
+* "Reload privilege tables now? " -> `Y`
+  
 Copy configuration to mysql directory:
 ```console
-cp ./database/my.cnf /etc/mysql/conf.d/
+cp ./database/my.cnf /etc/mysql/mariadb.conf.d/
 ```
 Run lemp.sql file from the project directory:
 ```console
@@ -113,7 +128,7 @@ systemctl start lemp-backend
 ### `Webserver`
 Install Nginx webserver:
 ```console
-apt install nginx -y
+apt install -y nginx curl
 ```
 Set firewall rules:
 ```console
@@ -128,10 +143,6 @@ Install Nodejs:
 ```console
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
 apt install -y nodejs
-```
-Install NPM (should be normally provided with NodeJS):
-```console
-apt install -y npm
 ```
 `!!!` Only set following environment variable when remote access is required:
 ```console
@@ -171,9 +182,17 @@ Go to the ansible directory:
 ```console
 cd /opt/LEMP-tm/linux/ansible
 ```
+### !! Consider !!
+Please take a look at the Ansible Playbook before running it! Some variables need to be declared and checked. When in development, set the ` development` variable to `true`. When installing from remote set `local` variable to `false`! Also the `path of the project` NEEDS to be specified, either the local or remote location, depending of the `local` variable.
+### Localhost
 Ansible will be run locally with following command:
 ```console
 sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK -v
+```
+### Remote
+Ansible will be run locally with following command:
+```console
+sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=lemp-tm-ansible" -kK -v
 ```
 
 ## Containerization (Docker)

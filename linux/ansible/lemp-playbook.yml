@@ -5,12 +5,12 @@
   remote_user: bryan
   become: true
   vars:
-    project_path: ~/Desktop/LEMP-tm
+    project_path: ~/ #<< Add path where project is located
     # project_path: /opt/LEMP-tm #<< Local installation
     mysql_root_password: "insecure"
     local: false
     # local: true #<< Local installation
-    development: true
+    development: false
     nodejs_version: 18
     os_environment:
       - key: REACT_APP_BACKEND
@@ -70,14 +70,14 @@
     - name: Copy MariaDB files
       ansible.builtin.copy:
         src: "{{ project_path }}/database/"
-        dest: /etc/mysql/conf.d/
+        dest: /etc/mysql/mariadb.conf.d/
         remote_src: "{{ local }}"
         owner: mysql
         group: mysql
         mode: 0600
 
     - name: Parse SQL script
-      ansible.builtin.shell: "mysql < /etc/mysql/conf.d/lemp.sql"
+      ansible.builtin.shell: "mysql < /etc/mysql/mariadb.conf.d/lemp.sql"
       register: mdb_output
       changed_when: mdb_output.rc != 0
       run_once: true
@@ -174,7 +174,7 @@
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
       with_items: "{{ os_environment }}"
-      when: not local
+      when: not development
 
     - name: Copy frontend directory
       ansible.builtin.copy:
@@ -194,11 +194,11 @@
           args:
             chdir: ~/frontend
 
-    - name: Copy folder to /var/www/html
-      ansible.builtin.copy:
-        src: ~/frontend/build/
-        dest: /var/www/html
-        remote_src: true
+        - name: Copy folder to /var/www/html
+          ansible.builtin.copy:
+            src: ~/frontend/build/
+            dest: /var/www/html
+            remote_src: true
 
     - name: Restart Nginx service
       ansible.builtin.systemd:
@@ -206,3 +206,4 @@
         state: restarted
 
 ...
+
