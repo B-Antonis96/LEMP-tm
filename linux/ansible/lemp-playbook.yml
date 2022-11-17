@@ -9,7 +9,7 @@
   vars:
     project_path: /opt/LEMP-tm
     mysql_root_password: "insecure"
-    remote: false
+    local: true
     development: true
     nodejs_version: 18
     os_environment:
@@ -109,7 +109,7 @@
       ansible.builtin.copy:
         src: "{{ project_path }}/database/my.cnf"
         dest: /etc/mysql/conf.d/my.cnf
-        remote_src: "{{ remote }}"
+        remote_src: "{{ local }}"
         owner: mysql
         group: mysql
         mode: 0600
@@ -119,7 +119,7 @@
       register: mdb_output
       changed_when: mdb_output.rc != 0
 
-    - name: Restart MAriaDB service
+    - name: Restart MariaDB service
       ansible.builtin.systemd:
         name: mariadb
         state: restarted
@@ -141,16 +141,16 @@
 
     - name: Copy backend content to API directory
       ansible.builtin.copy:
-        src: "{{ project_path }}/backend/*"
+        src: "{{ project_path }}/backend/"
         dest: /var/www/api
-        remote_src: "{{ remote }}"
+        remote_src: "{{ local }}"
         mode: 0777
 
     - name: Copy the service file to the system directory
       ansible.builtin.copy:
         src: "{{ project_path }}/linux/backend/lemp-backend.service"
         dest: /etc/systemd/system/
-        remote_src: "{{ remote }}"
+        remote_src: "{{ local }}"
         mode: 0644
 
     - name: Enable and start the backend service
@@ -168,7 +168,7 @@
       ansible.builtin.copy:
         src: "{{ project_path }}/linux/nginx/default.conf"
         dest: /etc/nginx/conf.d
-        remote_src: "{{ remote }}"
+        remote_src: "{{ local }}"
         mode: 0644
 
     - name: Setup Nodejs
@@ -204,7 +204,7 @@
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
       with_items: "{{ os_environment }}"
-      when: remote
+      when: not local
     
     - name: NPM setup and build
       block:
@@ -221,7 +221,7 @@
       ansible.builtin.copy:
         src: "{{ project_path }}/frontend/build/*"
         dest: /var/www/html
-        remote_src: "{{ remote }}"
+        remote_src: "{{ local }}"
 
     - name: Restart MAriaDB service
       ansible.builtin.systemd:
