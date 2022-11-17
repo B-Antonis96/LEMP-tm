@@ -86,7 +86,7 @@ Following prompts must be handled (capital Y: default):
   
 Copy configuration to mysql directory:
 ```console
-cp ./database/my.cnf /etc/mysql/conf.d/
+cp ./database/my.cnf /etc/mysql/mariadb.conf.d/
 ```
 Run lemp.sql file from the project directory:
 ```console
@@ -143,10 +143,6 @@ Install Nodejs:
 ```console
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
 apt install -y nodejs
-```
-Install NPM (should be normally provided with NodeJS):
-```console
-apt install -y npm
 ```
 `!!!` Only set following environment variable when remote access is required:
 ```console
