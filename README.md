@@ -18,15 +18,16 @@ LEMP stack for school project, application hosts a website for displaying "messa
 * Ansible: https://www.ansible.com
 * Docker: https://www.docker.com
 
-## Installation (Linux)
-`Following installation only implies to Ubuntu setup.`
-### Pre-requirements:
-* Fresh installed Ubuntu machine
-* Project files (Lemp-tm)
-### `Base`
+### `Project Setup`
+*`Valid for all implementations!`*
+
 Become the root user:
 ```console
 sudo -i
+```
+Find the project directory (downloaded from git):
+```console
+~ ./LEMP-tm
 ```
 Move the project directory (from downloaded location):
 ```console
@@ -36,6 +37,13 @@ Access the project directory:
 ```console
 cd /opt/LEMP-tm
 ```
+
+## Installation (Linux)
+`Following installation only implies to Ubuntu setup.`
+### Pre-requirements:
+* Fresh installed Ubuntu machine
+* Project files (Lemp-tm)
+### `Base`
 Install updates:
 ```console
 apt update && apt dist-upgrade -y
@@ -61,21 +69,6 @@ Install MariaDB server:
 ```console
 apt install mariadb-server -y
 ```
-Start configuration of database:
-```console
-mysql_secure_installation
-```
-Following prompts must be handled:
-* "Enter current password for root" -> `none (ENTER)`
-* "Switch to unix_socket authentication" -> `n`
-* "Set root password?" -> `Y`
-  * Password: `insecure`
-  * Re-enter password
-* "Remove anonymous users?" -> `Y`
-* "Disallow root login remotely?" -> `n`
-* "Remove test database and access to it?" -> `Y`
-* "Reload privilege tables now? " -> `Y`
-
 Copy configuration to mysql directory:
 ```console
 cp ./database/my.cnf /etc/mysql/conf.d/
@@ -136,7 +129,11 @@ Install Nodejs:
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
 apt install -y nodejs
 ```
-`!!!` Do NOT set following environment variable for LOCAL development:
+Install NPM (should be normally provided with NodeJS):
+```console
+apt install -y npm
+```
+`!!!` Only set following environment variable when remote access is required:
 ```console
 export REACT_APP_BACKEND="$HOSTNAME:8000"
 ```
@@ -163,11 +160,20 @@ systemctl restart nginx
 
 Start with installing necessary packages:
 ```console
-sudo apt install -y ansible sshpass
+sudo apt install -y ansible openssh-server sshpass
+```
+Limit ssh port with ufw:
+```console
+sudo ufw limit ssh &&\
+sudo ufw enable
+```
+Go to the ansible directory:
+```console
+cd /opt/LEMP-tm/linux/ansible
 ```
 Ansible will be run locally with following command:
 ```console
-sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK
+sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK -v
 ```
 
 ## Containerization (Docker)
