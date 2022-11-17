@@ -4,12 +4,12 @@
   hosts: "{{ server_hosts }}"
   remote_user: bryan
   become: true
-
-  # Default variables
   vars:
-    project_path: /opt/LEMP-tm
+    project_path: ~/Desktop/LEMP-tm
+    # project_path: /opt/LEMP-tm #<< Local installation
     mysql_root_password: "insecure"
-    local: true
+    local: false
+    # local: true #<< Local installation
     development: true
     nodejs_version: 18
     os_environment:
@@ -67,19 +67,20 @@
     ## Database Setup tasks ##
     ##########################
 
-    - name: Copy MariaDB settings file
+    - name: Copy MariaDB files
       ansible.builtin.copy:
-        src: "{{ project_path }}/database/my.cnf"
-        dest: /etc/mysql/conf.d/my.cnf
+        src: "{{ project_path }}/database/"
+        dest: /etc/mysql/conf.d/
         remote_src: "{{ local }}"
         owner: mysql
         group: mysql
         mode: 0600
 
     - name: Parse SQL script
-      ansible.builtin.shell: "mysql < {{ project_path }}/database/lemp.sql"
+      ansible.builtin.shell: "mysql < /etc/mysql/conf.d/lemp.sql"
       register: mdb_output
       changed_when: mdb_output.rc != 0
+      run_once: true
 
     - name: Restart MariaDB service
       ansible.builtin.systemd:
@@ -97,9 +98,16 @@
         mode: 0777
         recurse: true
 
+    - name: Copy requirements file
+      ansible.builtin.copy:
+        src: "{{ project_path }}/requirements.txt"
+        dest: ~/requirements.txt
+        remote_src: "{{ local }}"
+        mode: 0777
+
     - name: Install required PIP packages
       ansible.builtin.pip:
-        requirements: "{{ project_path }}/requirements.txt"
+        requirements: ~/requirements.txt
 
     - name: Copy backend content to API directory
       ansible.builtin.copy:
@@ -167,23 +175,30 @@
         line: "{{ item.key }}={{ item.value }}"
       with_items: "{{ os_environment }}"
       when: not local
+
+    - name: Copy frontend directory
+      ansible.builtin.copy:
+        src: "{{ project_path }}/frontend"
+        dest: ~/
+        remote_src: "{{ local }}"
+        mode: 0644
     
     - name: NPM setup and build
       block:
         - name: Install NPM packages
           community.general.npm:
-            path: "{{ project_path }}/frontend/"
+            path: ~/frontend
 
         - name: Run build
           command: npm run build
           args:
-            chdir: "{{ project_path }}/frontend"
+            chdir: ~/frontend
 
     - name: Copy folder to /var/www/html
       ansible.builtin.copy:
-        src: "{{ project_path }}/frontend/build/"
+        src: ~/frontend/build/
         dest: /var/www/html
-        remote_src: "{{ local }}"
+        remote_src: true
 
     - name: Restart Nginx service
       ansible.builtin.systemd:
