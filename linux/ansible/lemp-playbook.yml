@@ -1,11 +1,34 @@
 ---
 
 - name: Install LEMP Stack (Ubuntu)
-  hosts: localhost
+  hosts: "{{ server_hosts }}"
   remote_user: bryan
   become: true
 
+  # Default variables
+  vars:
+    project_path: /opt/LEMP-tm
+    mysql_root_password: "insecure"
+    remote: false
+    development: true
+    nodejs_version: 18
+    os_environment:
+      - key: REACT_APP_BACKEND
+        value: "{{ ansible_nodename }}:8000"
+
+
   tasks:
+    ################################
+    ## BASE OS Installation tasks ##
+    ################################
+
+    - name: Update repo's and packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        cache_valid_time: 3600
+        force_apt_get: true
+
     - name: Install required packages
       ansible.builtin.apt:
         name:
@@ -14,5 +37,191 @@
           - nginx
           - mariadb-server
         state: present
+
+    - name: Limit ssh
+      community.general.ufw:
+        rule: limit
+        port: ssh
+        proto: tcp
+
+    - name: Allow WEB ports
+      community.general.ufw:
+        rule: allow
+        port: 'Nginx HTTP'
+        state: reloaded
+
+    - name: Enable UFW
+      community.general.ufw:
+        state: enabled
+
+    - name: Allow development ports (optional)
+      community.general.ufw:
+        rule: allow
+        port: "{{ item }}"
+        state: reloaded
+      with_items:
+        - 8000
+        - 3306
+      when: development
+
+    ##########################
+    ## Database Setup tasks ##
+    ##########################
+
+    # - name: Update MariaDB root password
+    #   community.mysql.mysql_user:
+    #     name: root
+    #     host: localhost
+    #     password: "{{ mysql_root_password }}"
+    #   # with_items:
+    #   #   - 127.0.0.1
+    #   #   - ::1
+    #   #   - localhost
+
+    - name: Update MariaDB root user
+      community.mysql.mysql_user:
+        login_user: root
+        login_password: ""
+        name: root
+        password: "{{ mysql_root_password }}"
+        priv: "*.*:ALL"
+        state: present
+
+    - name: Delete anonymous MySQL user
+      community.mysql.mysql_user:
+        name: ""
+        host: localhost
+        state: absent
+      # with_items:
+      #   - localhost
+      #   - "{{ansible_nodename}}"
+
+    - name: Remove MySQL test database
+      community.mysql.mysql_db:
+        name: test
+        state: absent
+
+    - name: Copy MariaDB settings file
+      ansible.builtin.copy:
+        src: "{{ project_path }}/database/my.cnf"
+        dest: /etc/mysql/conf.d/my.cnf
+        remote_src: "{{ remote }}"
+        owner: mysql
+        group: mysql
+        mode: 0600
+
+    - name: Parse SQL script
+      ansible.builtin.shell: "mysql < {{ project_path }}/database/lemp.sql"
+      register: mdb_output
+      changed_when: mdb_output.rc != 0
+
+    - name: Restart MAriaDB service
+      ansible.builtin.systemd:
+        name: mariadb
+        state: restarted
+
+    #########################
+    ## Backend Setup tasks ##
+    #########################
+
+    - name: Create API directory
+      ansible.builtin.file:
+        path: /var/www/api
+        state: directory
+        mode: 0777
+        recurse: true
+
+    - name: Install required PIP packages
+      ansible.builtin.pip:
+        requirements: "{{ project_path }}/requirements.txt"
+
+    - name: Copy backend content to API directory
+      ansible.builtin.copy:
+        src: "{{ project_path }}/backend/*"
+        dest: /var/www/api
+        remote_src: "{{ remote }}"
+        mode: 0777
+
+    - name: Copy the service file to the system directory
+      ansible.builtin.copy:
+        src: "{{ project_path }}/linux/backend/lemp-backend.service"
+        dest: /etc/systemd/system/
+        remote_src: "{{ remote }}"
+        mode: 0644
+
+    - name: Enable and start the backend service
+      ansible.builtin.systemd:
+        state: started
+        daemon_reload: true
+        enabled: true
+        name: lemp-backend.service
+
+    ##########################
+    ## Frontend Setup tasks ##
+    ##########################
+
+    - name: Copy the Nginx config file
+      ansible.builtin.copy:
+        src: "{{ project_path }}/linux/nginx/default.conf"
+        dest: /etc/nginx/conf.d
+        remote_src: "{{ remote }}"
+        mode: 0644
+
+    - name: Setup Nodejs
+      block:
+        - name: Install GPG
+          tags: nodejs, install, setup
+          ansible.builtin.apt:
+            name: gnupg
+            update_cache: true
+            state: present
+
+        - name: Install the gpg key for nodejs LTS
+          ansible.builtin.apt_key:
+            url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+            state: present
+
+        - name: Install the nodejs LTS repos
+          ansible.builtin.apt_repository:
+            repo: "deb https://deb.nodesource.com/node_{{ nodejs_version }}.x {{ ansible_distribution_release }} main"
+            state: present
+            update_cache: true
+
+        - name: Install NodeJS
+          tags: nodesjs, install
+          ansible.builtin.apt:
+            name: nodejs
+            state: present
+
+    - name: Export React Backend Var (remote)
+      ansible.builtin.lineinfile:
+        dest: "/etc/environment"
+        state: present
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      with_items: "{{ os_environment }}"
+      when: remote
+    
+    - name: NPM setup and build
+      block:
+        - name: Install NPM packages
+          community.general.npm:
+            path: "{{ project_path }}/frontend/package.json"
+
+        - name: Run build
+          command: npm run build
+          args:
+            chdir: "{{ project_path }}/frontend"
+
+    - name: Copy folder to /var/www/html
+      ansible.builtin.copy:
+        src: "{{ project_path }}/frontend/build/*"
+        dest: /var/www/html
+        remote_src: "{{ remote }}"
+
+    - name: Restart MAriaDB service
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
 
 ...
