@@ -128,7 +128,7 @@ systemctl start lemp-backend
 ### `Webserver`
 Install Nginx webserver:
 ```console
-apt install nginx -y
+apt install -y nginx curl
 ```
 Set firewall rules:
 ```console
