@@ -210,7 +210,7 @@
       block:
         - name: Install NPM packages
           community.general.npm:
-            path: "{{ project_path }}/frontend/package.json"
+            path: "{{ project_path }}/frontend/"
 
         - name: Run build
           command: npm run build
