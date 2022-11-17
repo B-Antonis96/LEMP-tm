@@ -82,28 +82,28 @@
     #   #   - ::1
     #   #   - localhost
 
-    - name: Update MariaDB root user
-      community.mysql.mysql_user:
-        login_user: root
-        login_password: ""
-        name: root
-        password: "{{ mysql_root_password }}"
-        priv: "*.*:ALL"
-        state: present
+    # - name: Update MariaDB root user
+    #   community.mysql.mysql_user:
+    #     login_user: root
+    #     login_password: ""
+    #     name: root
+    #     password: "{{ mysql_root_password }}"
+    #     priv: "*.*:ALL"
+    #     state: present
 
-    - name: Delete anonymous MySQL user
-      community.mysql.mysql_user:
-        name: ""
-        host: localhost
-        state: absent
-      # with_items:
-      #   - localhost
-      #   - "{{ansible_nodename}}"
+    # - name: Delete anonymous MySQL user
+    #   community.mysql.mysql_user:
+    #     name: ""
+    #     host: localhost
+    #     state: absent
+    #   # with_items:
+    #   #   - localhost
+    #   #   - "{{ansible_nodename}}"
 
-    - name: Remove MySQL test database
-      community.mysql.mysql_db:
-        name: test
-        state: absent
+    # - name: Remove MySQL test database
+    #   community.mysql.mysql_db:
+    #     name: test
+    #     state: absent
 
     - name: Copy MariaDB settings file
       ansible.builtin.copy:
