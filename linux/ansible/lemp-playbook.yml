@@ -36,7 +36,6 @@
           - python3-pip
           - nginx
           - mariadb-server
-          - PyMySQL
         state: present
 
     - name: Limit ssh
