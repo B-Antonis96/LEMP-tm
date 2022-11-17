@@ -1,0 +1,84 @@
+version: "3.9"
+
+services:
+
+  webserver:
+    container_name: NGINX
+    build:
+      context: .
+      dockerfile: ./frontend.Dockerfile
+      args:
+        # REACT_APP_BACKEND: lemp-tm:8000  #<<!! uncomment for non local dev
+        REACT_APP_TITLE: 'Welkom bij mijn eindproject in Docker!'
+    image: frontend
+    restart: always
+    volumes:
+      - ./linux/nginx/:/etc/nginx/conf.d/:ro
+    networks:
+      - lemp
+    ports:
+      - 80:80
+
+  backend:
+    container_name: FastAPI
+    build:
+      context: .
+      dockerfile: ./backend.Dockerfile
+    image: backend
+    restart: always
+    environment:
+      APPLICATION: "${APPLICATION}"
+      DB_HOST: "${DB_HOST}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_DATABASE: "${DB_DATABASE}"
+    networks:
+      - lemp
+    ports:
+      - 8000:8000
+
+  database:
+    container_name: MariaDB
+    image: "mariadb:${MARIADB_VERSION}"
+    restart: 'always'
+    volumes: 
+      - database_storage:/var/lib/mysql
+      - ./database/:/docker-entrypoint-initdb.d/:ro
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD_ROOT}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD_ROOT}"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    networks:
+      - lemp
+    ports:
+      - 3306:3306
+
+  management:
+    container_name: Portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - management_storage:/data
+    networks:
+      - lemp
+    ports:
+      - 9000:9000
+    
+volumes:
+  database_storage:
+    driver: local
+  management_storage:
+    driver: local
+
+networks:
+  lemp:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.10.0/24
+          gateway: 172.16.10.1

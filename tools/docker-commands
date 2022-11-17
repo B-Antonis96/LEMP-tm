@@ -1,0 +1,2 @@
+docker volume rm $(docker volume ls -q)
+docker build -f backend.Dockerfile -t backend .
