@@ -77,7 +77,7 @@
         mode: 0600
 
     - name: Parse SQL script
-      ansible.builtin.shell: "mysql < /etc/mysql/conf.d/lemp.sql"
+      ansible.builtin.shell: "mysql < /etc/mysql/mariadb.conf.d/lemp.sql"
       register: mdb_output
       changed_when: mdb_output.rc != 0
       run_once: true
