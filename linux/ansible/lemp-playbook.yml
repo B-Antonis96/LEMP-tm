@@ -219,11 +219,11 @@
 
     - name: Copy folder to /var/www/html
       ansible.builtin.copy:
-        src: "{{ project_path }}/frontend/build/*"
+        src: "{{ project_path }}/frontend/build/"
         dest: /var/www/html
         remote_src: "{{ local }}"
 
-    - name: Restart MAriaDB service
+    - name: Restart Nginx service
       ansible.builtin.systemd:
         name: nginx
         state: restarted
