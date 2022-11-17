@@ -163,13 +163,47 @@ systemctl restart nginx
 
 Start with installing necessary packages:
 ```console
-sudo apt install ansible sshpass
+sudo apt install -y ansible sshpass
 ```
-When running the Ansible from same host (localhost) run following command:
+Ansible will be run locally with following command:
 ```console
 sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK
 ```
-When running the Ansible from same host (localhost) run following command:
+
+## Containerization (Docker)
+Start with installing necessary packages:
+
+Setup Docker repo:
 ```console
-sudo ansible-playbook -i inventory lemp-playbook.yml --extra-vars "server_hosts=localhost" -kK
+sudo apt update
+
+sudo apt install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+sudo mkdir -p /etc/apt/keyrings
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+Install Docker:
+```console
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+sudo apt update
+
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose
+```
+Start up Docker Compose with following commands:
+```console
+cd /opt/LEMP-tm
+
+sudo docker-compose build
+
+sudo docker-compose up
 ```
