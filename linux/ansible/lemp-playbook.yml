@@ -194,11 +194,11 @@
           args:
             chdir: ~/frontend
 
-    - name: Copy folder to /var/www/html
-      ansible.builtin.copy:
-        src: ~/frontend/build/
-        dest: /var/www/html
-        remote_src: true
+        - name: Copy folder to /var/www/html
+          ansible.builtin.copy:
+            src: ~/frontend/build/
+            dest: /var/www/html
+            remote_src: true
 
     - name: Restart Nginx service
       ansible.builtin.systemd:
@@ -206,3 +206,4 @@
         state: restarted
 
 ...
+

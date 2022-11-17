@@ -21,13 +21,20 @@ LEMP stack for school project, application hosts a website for displaying "messa
 ### `Project Setup`
 *`Valid for all implementations!`*
 
-Become the root user:
-```console
-sudo -i
-```
 Find the project directory (downloaded from git):
 ```console
 ~ ./LEMP-tm
+```
+
+## Installation (Linux)
+`Following installation only implies to Ubuntu setup.`
+### Pre-requirements:
+* Fresh installed Ubuntu machine
+* Project files (Lemp-tm)
+### `Base`
+Become the root user:
+```console
+sudo -i
 ```
 Move the project directory (from downloaded location):
 ```console
@@ -37,13 +44,6 @@ Access the project directory:
 ```console
 cd /opt/LEMP-tm
 ```
-
-## Installation (Linux)
-`Following installation only implies to Ubuntu setup.`
-### Pre-requirements:
-* Fresh installed Ubuntu machine
-* Project files (Lemp-tm)
-### `Base`
 Install updates:
 ```console
 apt update && apt dist-upgrade -y
@@ -69,6 +69,21 @@ Install MariaDB server:
 ```console
 apt install mariadb-server -y
 ```
+Start configuration of database `(only for development)`:
+```console
+mysql_secure_installation
+```
+Following prompts must be handled (capital Y: default):
+* "Enter current password for root" -> `none (ENTER)`
+* "Switch to unix_socket authentication" -> `n`
+* "Set root password?" -> `Y`
+  * Password: "`insecure`"
+  * Re-enter password
+* "Remove anonymous users?" -> `Y`
+* "Disallow root login remotely?" -> `n`
+* "Remove test database and access to it?" -> `Y`
+* "Reload privilege tables now? " -> `Y`
+  
 Copy configuration to mysql directory:
 ```console
 cp ./database/my.cnf /etc/mysql/conf.d/
