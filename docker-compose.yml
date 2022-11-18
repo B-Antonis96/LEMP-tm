@@ -59,8 +59,7 @@ services:
     container_name: Portainer
     image: portainer/portainer-ce:latest
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+    command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - management_storage:/data
